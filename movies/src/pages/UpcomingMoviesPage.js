@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { getUpcomingMovies } from "../api/tmdb-api"; 
 import PageTemplate from "../components/templateMovieListPage";
 import Spinner from '../components/spinner';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'; // 导入 PlaylistAdd 图标
+import { MoviesContext } from "../contexts/moviesContext"; // 导入 MoviesContext
+import AddToWatchlistIcon from "../components/cardIcons/AddToWatchlist"; // 导入添加到“必看”列表的图标组件
+
+
 
 const UpcomingMoviesPage = () => {
   const [movies, setMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { addToWatchlist } = useContext(MoviesContext); // 获取 addToWatchlist 函数
 
   useEffect(() => {
     const fetchUpcomingMovies = async () => {
@@ -29,11 +33,11 @@ const UpcomingMoviesPage = () => {
 
   return (
     <PageTemplate
-      title="即将上映的电影" // 可以根据需要调整标题
+      title="Upcoming Movies"
       movies={movies}
       action={(movie) => {
         return (
-          <PlaylistAddIcon />  // 在这里添加 PlaylistAdd 图标
+          <AddToWatchlistIcon movie={movie} onClick={() => addToWatchlist(movie)} />
         );
       }}
     />
