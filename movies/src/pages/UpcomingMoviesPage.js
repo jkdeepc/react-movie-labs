@@ -1,30 +1,39 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getUpcomingMovies } from "../api/tmdb-api"; 
 import PageTemplate from "../components/templateMovieListPage";
-import { useQuery } from "react-query";
-import { getUpcomingMovies } from "../api/tmdb-api"; // 确保这个函数存在并且工作正常
 import Spinner from '../components/spinner';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'; // 导入 PlaylistAdd 图标
 
 const UpcomingMoviesPage = () => {
-  const { data, error, isLoading } = useQuery("upcomingMovies", getUpcomingMovies);
+  const [movies, setMovies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUpcomingMovies = async () => {
+      try {
+        const upcomingMovies = await getUpcomingMovies();
+        setMovies(upcomingMovies.results); // 根据返回的数据结构调整
+      } catch (error) {
+        console.error("Failed to get upcoming movies:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUpcomingMovies();
+  }, []);
 
   if (isLoading) {
     return <Spinner />;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  const movies = data.results;
-
   return (
     <PageTemplate
-      title="即将上映的电影"
+      title="即将上映的电影" // 可以根据需要调整标题
       movies={movies}
       action={(movie) => {
         return (
-          <PlaylistAddIcon />  {/* 在这里显示 PlaylistAdd 图标 */}
+          <PlaylistAddIcon />  // 在这里添加 PlaylistAdd 图标
         );
       }}
     />
